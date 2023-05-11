@@ -17,11 +17,11 @@ const Tokens = {
  * Representa un token, el analizador tendra una lista de estos.
  */
 class Token {
-    constructor(tipo, valor, estado, siguiente) {
+    constructor(tipo, valor, estado, ultimo){
         this.tipo = tipo;
         this.valor = valor,
-            this.estado = estado,
-            this.siguiente = siguiente
+        this.estado = estado,
+        this.ultimo = ultimo
     };
 }
 /**
@@ -43,7 +43,7 @@ class analizador {
         while (i < this.codigo.length) {
             token = this.extraerSgteToken(i);
             this.lista_tokens.push(token)
-            i = token.siguiente + 1;
+            i = token.ultimo + 1;
         }
         console.log(this.lista_tokens);
     };
@@ -91,14 +91,17 @@ class analizador {
 
         //Si posicion actual de la cadena es un numero
         if (!isNaN(caracter)) {
-            let pos = i;   
+            let pos = i;
+            i++;   
 
             //Siga recorriendo mientras encuentre un numero o un punto
-            while (i < this.codigo.length && (!isNaN(caracter) || caracter === '.')) {
+            while (i < this.codigo.length && (!isNaN(caracter) || caracter === '.')) { 
+                i++;           
                 caracter = this.codigo.charAt(i);
-                i++;
+                
                 
             }
+
               
             //Evaluo si la subcadena es un numero entero
             if (Number.isInteger(Number(this.codigo.substring(pos, i)))) {
@@ -132,10 +135,13 @@ class analizador {
           i++;
           caracter = this.codigo.charAt(i);
           
+          
           //mientras sea una letra o un -
           while (i < this.codigo.length && (patternLetra.test(caracter) || caracter === "-")) {
-            caracter = this.codigo.charAt(i);
             i++;
+            caracter = this.codigo.charAt(i);
+            
+            
             
           }
           //si hace match retorne el token tipo identificador
@@ -163,23 +169,27 @@ class analizador {
     
             //mientras el caracter sea diferente a un salto de linea
             while (i < this.codigo.length && caracter !== '\n') {
+                i++;
                 caracter = this.codigo.charAt(i);
                 
                 //Si encuientra otro / termine el ciclo que hemos terminado de encontrar nuestra cadena
                 if (caracter === '/') {
-                    caracter = this.codigo.charAt(i);
                     i++;
+                    caracter = this.codigo.charAt(i);
+                    
+                    
                     break;
                 }
                 
-                i++;
+                
+               
                 
             }
+
     
             
             //Si la cadena hace martch con el pattern retorne el token tipo cadena de caracteres
             if (pattern.test(this.codigo.substring(pos, i))) {
-                console.log(`Se extrajo un STRING`);
                 return new Token(Tokens.CADENA_CARACTERES, this.codigo.substring(pos, i), `OK`, i);
             }
         }
@@ -189,10 +199,5 @@ class analizador {
     
     
 }
-
-
-const a = new analizador("$id-prueba@@@ /Una cadena@@@ſ€ſđſ@ŋđ/joooo/145.", []);
+const a = new analizador("$id @@@ /Una cadena@@@ſ€ſđſ@ŋđ/123.4!COMMENTARIO!", []);
 a.analizar();
-
-
-  
