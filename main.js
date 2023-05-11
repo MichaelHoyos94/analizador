@@ -16,11 +16,11 @@ const Tokens = {
  * Representa un token, el analizador tendra una lista de estos.
  */
 class Token {
-    constructor(tipo, valor, estado, siguiente){
+    constructor(tipo, valor, estado, ultimo){
         this.tipo = tipo;
         this.valor = valor,
         this.estado = estado,
-        this.siguiente = siguiente
+        this.ultimo = ultimo
     };
 }
 /**
@@ -42,10 +42,15 @@ class analizador {
         while (i < this.codigo.length){
             token = this.extraerSgteToken(i);
             this.lista_tokens.push(token)
-            i = token.siguiente + 1;
+            i = token.ultimo + 1;
         }
         console.log(this.lista_tokens);
     };
+    /**
+     * Extrae el siguiente token.
+     * @param {*} i 
+     * @returns 
+     */
     extraerSgteToken = (i) =>{
         let token = this.extraerEntero(i);
         if (token)
@@ -56,7 +61,10 @@ class analizador {
         token = this.extraerIdentificador(i);
         if (token)
             return token;
-        return new Token(Token.NO_RECONOCIDO, this.codigo.charAt(i), 'ERROR', i);
+        token = this.extraerComentario(i);
+        if (token)
+            return token;
+        return new Token(Tokens.NO_RECONOCIDO, this.codigo.charAt(i), 'ERROR', i);
     };
     extraerEntero = (i) =>{
         //Si empieza por un digito
@@ -85,11 +93,11 @@ class analizador {
                 i++;
             }
             console.log(`Se extrajo un identificador.`);
-            return new Token(Tokens.IDENTIFICADOR, this.codigo.substring(pos, i), `OK`, i)
+            return new Token(Tokens.IDENTIFICADOR, this.codigo.substring(pos, i), `OK`, i - 1);
         }
         return null;
     };
-    extraerString(i){
+    extraerString = (i) =>{
         if (this.codigo.charAt(i) == `/`){
             let pos = i;
             i++;
@@ -97,13 +105,25 @@ class analizador {
                 i++;
             }
             i++;
-            console.log(`Se extrajo un STRING`);
-            return new Token(Tokens.CADENA_CARACTERES, this.codigo.substring(pos, i), `OK`, i);
+            console.log(`Se extrajo un String`);
+            return new Token(Tokens.CADENA_CARACTERES, this.codigo.substring(pos, i), `OK`, i - 1);
         }
-    }
+    };
+    extraerComentario = (i) =>{
+        if (this.codigo.charAt(i) == `!`){
+            let pos = i;
+            i++;
+            while (i < this.codigo.length && this.codigo.charAt(i) != `!`){
+                i++;
+            }
+            i++;
+            console.log(`Se extrajo un comentario`);
+            return new Token(Tokens.COMENTARIO_LINEA, this.codigo.substring(pos, i), `OK`, i - 1);
+        }
+    };
     extraerDecimal = (i) =>{
 
     };
 }
-const a = new analizador("$id @@@ /Una cadena@@@ſ€ſđſ@ŋđ/", []);
+const a = new analizador("$id @@@ /Una cadena@@@ſ€ſđſ@ŋđ/!COMMENTARIO!", []);
 a.analizar();
