@@ -1,5 +1,5 @@
 const Tokens = {
-    NO_RECONOCIDO:`desconocido`,
+    NO_RECONOCIDO: `desconocido`,
     ENTERO: `Numero entero`,
     DECIMAL: `Numero decimal`,
     IDENTIFICADOR: `Identificador`,
@@ -10,24 +10,25 @@ const Tokens = {
     OPERADOR_ARITMETICO: `Operador aritmetico`,
     OPERADOR_RELACIONAL: `Operador relacional`,
     OPERADOR_LOGICO: `Operador logico`,
-    OPERADOR_INCREMENTO: `Operador de incremento`
+    OPERADOR_INCREMENTO: `Operador de incremento`,
+    ESPACIO_O_SALTO: 'Espacio o salto'
 }
 /**
  * Representa un token, el analizador tendra una lista de estos.
  */
 class Token {
-    constructor(tipo, valor, estado, siguiente){
+    constructor(tipo, valor, estado, siguiente) {
         this.tipo = tipo;
         this.valor = valor,
-        this.estado = estado,
-        this.siguiente = siguiente
+            this.estado = estado,
+            this.siguiente = siguiente
     };
 }
 /**
  * El analizador, toma el codigo fuente y lo analiza para formar una lista de tokens.
  */
 class analizador {
-    constructor(codigo, lista_tokens){
+    constructor(codigo, lista_tokens) {
         this.codigo = codigo;
         this.lista_tokens = lista_tokens;
     };
@@ -39,71 +40,159 @@ class analizador {
         let token = null;
         console.log(this.codigo);
         console.log(this.codigo.length);
-        while (i < this.codigo.length){
+        while (i < this.codigo.length) {
             token = this.extraerSgteToken(i);
             this.lista_tokens.push(token)
             i = token.siguiente + 1;
         }
         console.log(this.lista_tokens);
     };
-    extraerSgteToken = (i) =>{
-        let token = this.extraerEntero(i);
-        if (token)
-            return token;
+    extraerSgteToken = (i) => {
+
+        let token = this.extraerNumero(i);
+        if (token) {
+          return token;
+        }
+      
         token = this.extraerString(i);
-        if (token)
-            return token;
+        if (token) {
+          return token;
+        }
+      
         token = this.extraerIdentificador(i);
-        if (token)
+        if (token) {
+          return token;
+        }
+
+        token = this.quitarEspacio(i);
+        if (token) {
             return token;
-        return new Token(Token.NO_RECONOCIDO, this.codigo.charAt(i), 'ERROR', i);
-    };
-    extraerEntero = (i) =>{
-        //Si empieza por un digito
-        //Se declara el inicio de la posicion.
-        /* 
-        if (this.codigo.charAt(i)){
-            let pos = i;
-            while(i <= this.codigo.lenght && this.codigo.charAt(i) != ` ` && esdigito){
-                i++;
-            }
-            return new Token(Tokens.ENTERO, this.codigo.substring(pos, i), `OK`, i);
-        }*/
-        //Seguir extrayendo digitos mientras i < codigo.lengt y el caracter en i sea digito.
-        return null;
-    };
-    /**
-     * @description: Extrae un identificador del codigo fuente.
-     * @param {*} i : Posicion inicial en el codigo fuente. Si es identificador pos sera inicial e i sera final.
-     * @returns : token o null si no es identificador.
-     */
-    extraerIdentificador(i){
-        if (this.codigo.charAt(i) == `$`){
-            let pos = i;
-            i++;
-            while(i <= this.codigo.length && this.codigo.charAt(i) != ` `){
-                i++;
-            }
-            console.log(`Se extrajo un identificador.`);
-            return new Token(Tokens.IDENTIFICADOR, this.codigo.substring(pos, i), `OK`, i)
         }
-        return null;
-    };
-    extraerString(i){
-        if (this.codigo.charAt(i) == `/`){
-            let pos = i;
-            i++;
-            while (i < this.codigo.length && this.codigo.charAt(i) != `/`){
-                i++;
-            }
-            i++;
-            console.log(`Se extrajo un STRING`);
-            return new Token(Tokens.CADENA_CARACTERES, this.codigo.substring(pos, i), `OK`, i);
+      
+        return new Token(Tokens.NO_RECONOCIDO, this.codigo.charAt(i), 'ERROR', i);
+      };
+
+
+    quitarEspacio(i){
+
+        let caracter = this.codigo.charAt(i);
+
+        if (caracter === ' ' || caracter === '\n') {
+            return new Token(Tokens.ESPACIO_O_SALTO, this.codigo.charAt(i), 'SALTO O ESPACIO', i);
         }
+
+        return null;
+
     }
-    extraerDecimal = (i) =>{
+
+    extraerNumero(i) {
+        //Posicion Actual de la cadena
+        let caracter = this.codigo.charAt(i);
+
+        //Si posicion actual de la cadena es un numero
+        if (!isNaN(caracter)) {
+            let pos = i;   
+
+            //Siga recorriendo mientras encuentre un numero o un punto
+            while (i < this.codigo.length && (!isNaN(caracter) || caracter === '.')) {
+                caracter = this.codigo.charAt(i);
+                i++;
+                
+            }
+              
+            //Evaluo si la subcadena es un numero entero
+            if (Number.isInteger(Number(this.codigo.substring(pos, i)))) {
+                return new Token(Tokens.ENTERO, this.codigo.substring(pos, i), `OK`, i);
+            
+            //Evaluo si la subcadena es un numero decimal
+            } else if (Number.isFinite(Number(this.codigo.substring(pos, i)))) {
+                return new Token(Tokens.DECIMAL, this.codigo.substring(pos, i), `OK`, i);
+
+            } else {
+                return null;
+            }
+
+        }
+
+        return null;
 
     };
+
+    extraerIdentificador(i) {
+        //Valor con el que deben hacer match solo acepta si esta en mayuscula, empieza con $ y no termina con -
+        const pattern = /^\$[A-Z]+(-[A-Z]+)*$/;
+        //match si puso el identificador en minuscula
+        const patternError = /^\$[A-Z]+(-[A-Z]+)*$/i;
+        //martc para saber si es una letra
+        const patternLetra = /^[a-zA-Z]/;
+        let caracter = this.codigo.charAt(i);
+      
+        if (caracter == "$") {
+          let pos = i;
+          i++;
+          caracter = this.codigo.charAt(i);
+          
+          //mientras sea una letra o un -
+          while (i < this.codigo.length && (patternLetra.test(caracter) || caracter === "-")) {
+            caracter = this.codigo.charAt(i);
+            i++;
+            
+          }
+          //si hace match retorne el token tipo identificador
+          if (pattern.test(this.codigo.substring(pos, i))) {
+            console.log("Se extrajo un identificador.");
+            return new Token(Tokens.IDENTIFICADOR, this.codigo.substring(pos, i), "OK", i);
+          } else if (caracter === "-") { // sino retorne un tipo token no reconocido con un error
+            return new Token(Tokens.NO_RECONOCIDO, this.codigo.substring(pos, i), "ERROR-IDENTIFICADOR SIN CERRAR", i);
+          }else if(patternError.test(this.codigo.substring(pos, i))){ // sino retorne un tipo token no reconocido con un error
+            return new Token(Tokens.NO_RECONOCIDO, this.codigo.substring(pos, i), "ERROR-IDENTIFICADOR EN MINUSCULAS", i);
+          }
+        }
+        return null;
+    };
+      
+    extraerString(i) {
+
+         //Valor con el que deben hacer match solo acepta si empieza y termina con /
+        const pattern = /^\/.*\/$/;
+        let caracter = this.codigo.charAt(i);
+    
+        if (caracter === '/') {
+            let pos = i;
+            i++;
+    
+            //mientras el caracter sea diferente a un salto de linea
+            while (i < this.codigo.length && caracter !== '\n') {
+                caracter = this.codigo.charAt(i);
+                
+                //Si encuientra otro / termine el ciclo que hemos terminado de encontrar nuestra cadena
+                if (caracter === '/') {
+                    caracter = this.codigo.charAt(i);
+                    i++;
+                    break;
+                }
+                
+                i++;
+                
+            }
+    
+            
+            //Si la cadena hace martch con el pattern retorne el token tipo cadena de caracteres
+            if (pattern.test(this.codigo.substring(pos, i))) {
+                console.log(`Se extrajo un STRING`);
+                return new Token(Tokens.CADENA_CARACTERES, this.codigo.substring(pos, i), `OK`, i);
+            }
+        }
+    
+        return null;
+    };
+    
+    
 }
-const a = new analizador("$id @@@ /Una cadena@@@ſ€ſđſ@ŋđ/", []);
+
+
+const a = new analizador("$id-prueba@@@ /Una cadena@@@ſ€ſđſ@ŋđ/joooo/145.", []);
 a.analizar();
+
+
+  
