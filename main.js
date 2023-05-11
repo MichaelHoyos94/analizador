@@ -10,7 +10,9 @@ const Tokens = {
     OPERADOR_ARITMETICO: `Operador aritmetico`,
     OPERADOR_RELACIONAL: `Operador relacional`,
     OPERADOR_LOGICO: `Operador logico`,
-    OPERADOR_INCREMENTO: `Operador de incremento`
+    OPERADOR_INCREMENTO: `Operador de incremento`,
+    OPERADOR_ASIGNACION: `Operador de asignacion`,
+    FIN_SENTENCIA: `Fin de sentencia`
 }
 /**
  * Representa un token, el analizador tendra una lista de estos.
@@ -40,9 +42,13 @@ class analizador {
         console.log(this.codigo);
         console.log(this.codigo.length);
         while (i < this.codigo.length){
-            token = this.extraerSgteToken(i);
-            this.lista_tokens.push(token)
-            i = token.ultimo + 1;
+            if (this.codigo.charAt(i) != ` `){
+                token = this.extraerSgteToken(i);
+                this.lista_tokens.push(token)
+                i = token.ultimo + 1;
+            } else {
+                i++;
+            }
         }
         console.log(this.lista_tokens);
     };
@@ -62,6 +68,15 @@ class analizador {
         if (token)
             return token;
         token = this.extraerComentario(i);
+        if (token)
+            return token;
+        token = this.extraerAsignacion(i);
+        if (token)
+            return token;
+        token = this.extraerLogico(i);
+        if (token)
+            return token;
+        token = this.extraerFin(i);
         if (token)
             return token;
         return new Token(Tokens.NO_RECONOCIDO, this.codigo.charAt(i), 'ERROR', i);
@@ -108,6 +123,7 @@ class analizador {
             console.log(`Se extrajo un String`);
             return new Token(Tokens.CADENA_CARACTERES, this.codigo.substring(pos, i), `OK`, i - 1);
         }
+        return null;
     };
     extraerComentario = (i) =>{
         if (this.codigo.charAt(i) == `!`){
@@ -120,10 +136,30 @@ class analizador {
             console.log(`Se extrajo un comentario`);
             return new Token(Tokens.COMENTARIO_LINEA, this.codigo.substring(pos, i), `OK`, i - 1);
         }
+        return null;
+    };
+    extraerAsignacion = (i) =>{//=> i = 0;
+        if (this.codigo.charAt(i) == `=` && this.codigo.charAt(i+1) == `>`)
+            return new Token(Tokens.OPERADOR_ASIGNACION, this.codigo.substring(i, i + 2), `OK`, i + 1);
+        return null;
+    };
+    extraerLogico = (i) =>{
+        if (this.codigo.charAt(i) == `Y` || this.codigo.charAt(i) == `O` || this.codigo.charAt(i) == `N`)
+            return new Token(Tokens.OPERADOR_LOGICO, this.codigo.charAt(i), `OK`, i);
+        return null;
+    };
+    extraerFin = (i) =>{
+        if (this.codigo.substring(i, this.codigo.length).startsWith(`FIN`))
+            return new Token(Tokens.FIN_SENTENCIA, `FIN`, `OK`, i + 2);
+        return null;  
     };
     extraerDecimal = (i) =>{
-
+        
     };
 }
-const a = new analizador("$id @@@ /Una cadena@@@ſ€ſđſ@ŋđ/!COMMENTARIO!", []);
+const codigo1 = "$id =>2 @@@ /CADENA/!COMEN!YONFIN";
+const a = new analizador(codigo1, []);
 a.analizar();
+let cad = `aaa`;
+let ocad = cad.substring(0, 3);
+console.log(ocad);
