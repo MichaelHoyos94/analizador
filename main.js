@@ -35,24 +35,75 @@ class analizador {
      * Metodo para analizar el codigo fuente.
      */
     analizar = () => {
-        let i = o;
+        let i = 0;
+        let token = null;
+        console.log(this.codigo);
+        console.log(this.codigo.length);
+        while (i < this.codigo.length){
+            token = this.extraerSgteToken(i);
+            this.lista_tokens.push(token)
+            i = token.siguiente + 1;
+        }
+        console.log(this.lista_tokens);
     };
     extraerSgteToken = (i) =>{
-        const token = {};
-        token = extraerEntero(i);
-        if (!token)
-            extraerDecimal(i)
+        let token = this.extraerEntero(i);
+        if (token)
+            return token;
+        token = this.extraerString(i);
+        if (token)
+            return token;
+        token = this.extraerIdentificador(i);
+        if (token)
+            return token;
+        return new Token(Token.NO_RECONOCIDO, this.codigo.charAt(i), 'ERROR', i);
     };
     extraerEntero = (i) =>{
         //Si empieza por un digito
         //Se declara el inicio de la posicion.
-        let pos = i;
+        /* 
+        if (this.codigo.charAt(i)){
+            let pos = i;
+            while(i <= this.codigo.lenght && this.codigo.charAt(i) != ` ` && esdigito){
+                i++;
+            }
+            return new Token(Tokens.ENTERO, this.codigo.substring(pos, i), `OK`, i);
+        }*/
         //Seguir extrayendo digitos mientras i < codigo.lengt y el caracter en i sea digito.
-        return new Token(Tokens.ENTERO, this.codigo.substring(pos, i), `OK`, i);
+        return null;
     };
+    /**
+     * @description: Extrae un identificador del codigo fuente.
+     * @param {*} i : Posicion inicial en el codigo fuente. Si es identificador pos sera inicial e i sera final.
+     * @returns : token o null si no es identificador.
+     */
+    extraerIdentificador(i){
+        if (this.codigo.charAt(i) == `$`){
+            let pos = i;
+            i++;
+            while(i <= this.codigo.length && this.codigo.charAt(i) != ` `){
+                i++;
+            }
+            console.log(`Se extrajo un identificador.`);
+            return new Token(Tokens.IDENTIFICADOR, this.codigo.substring(pos, i), `OK`, i)
+        }
+        return null;
+    };
+    extraerString(i){
+        if (this.codigo.charAt(i) == `/`){
+            let pos = i;
+            i++;
+            while (i < this.codigo.length && this.codigo.charAt(i) != `/`){
+                i++;
+            }
+            i++;
+            console.log(`Se extrajo un STRING`);
+            return new Token(Tokens.CADENA_CARACTERES, this.codigo.substring(pos, i), `OK`, i);
+        }
+    }
     extraerDecimal = (i) =>{
 
     };
 }
-
-console.log(Tokens.NO_RECONOCIDO);
+const a = new analizador("$id @@@ /Una cadena@@@ſ€ſđſ@ŋđ/", []);
+a.analizar();
