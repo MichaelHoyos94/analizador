@@ -7,8 +7,6 @@
         <meta name='viewport' content='width=device-width, initial-scale=1'>
         <link rel="stylesheet" type="text/css" media="screen" href="normalize.css">
         <link rel="stylesheet" type="text/css" media="screen" href="main.css">
-        <script src="tokens.js"></script>
-        <script src='main.js'></script>
     </head>
     <body>
         <div class="content">
@@ -22,19 +20,13 @@
             </header>
             <article class="main">
                 <div class="main__item" class="codigoFuente">
-                    <textarea class="main__item-codigo" placeholder="Ingrese el codigo fuente."></textarea>
+                    <textarea id="txt-codigo" class="main__item-codigo" placeholder="Ingrese el codigo fuente."></textarea>
                 </div>
                 <div class="main__item"  class="btn">
-                    <button class="btn__analizar">Analizar codigo</button>
+                    <button id="btn_analizar" class="main__item-btn">Analizar codigo</button>
                 </div>
                 <div class="main__item"  class="res">
-                    <ul>
-                        <li class="okToken">
-                            tipo: String    val: $Uniquindio$    estado: ok
-                        </li>
-                        <li class="wrongToken">
-                            tipo: desconocido   val: %%_   estado: error
-                        </li>
+                    <ul id="res-list" class="main__item-res">
                     </ul>
                 </div>
             </article class="article">
@@ -48,5 +40,6 @@
                 </div>
             </footer>
         </div>
+        <script src='main.js'></script>
     </body>
 </html>
