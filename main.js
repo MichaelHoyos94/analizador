@@ -69,6 +69,9 @@ class analizador {
         if (token) {
             return token;
         }
+        if(token)
+            return token;
+        token = this.extraerPalabraReservada(i);
 
         /*token = this.quitarEspacio(i);
         if (token) {
@@ -244,8 +247,34 @@ class analizador {
             return null;
         };
 
-
+        extraerPalabraReservada = (i) => {
+            let codigoMayus = this.codigo.toUpperCase();
+            let arr = codigoMayus.split(' ')
+            if(arr[i] == `ENTERO` || arr[i] == `REAL` || arr[i] == `PARA` || 
+            arr[i] == `MIENTRAS` || arr[i] == `PRIVADO` || arr[i] == `PUBLICO`
+            || arr[i] == `PAQUETE` || arr[i] == `IMPORTAR` || arr[i] == `CLASE`
+            || arr[i] == `RETORNAR` || arr[i] == `BREAK` || arr[i] == `CADENA`
+            || arr[i] == `BOOLEANO` || arr[i] == `SI` || arr[i] == `NO`){
+                let pos = i;
+                i++;
+                while(i < this.codigo.length && (arr[i] != `ENTERO` || arr[i] != `REAL` || arr[i] != `PARA` || 
+                arr[i] != `MIENTRAS` || arr[i] != `PRIVADO` || arr[i] != `PUBLICO`
+                || arr[i] != `PAQUETE` || arr[i] != `IMPORTAR` || arr[i] != `CLASE`
+                || arr[i] != `RETORNAR` || arr[i] != `BREAK` || arr[i] != `CADENA`
+                || arr[i] != `BOOLEANO` || arr[i] != `SI` || arr[i] != `NO`)){
+                    i++;
+                }
+                i++;
+                console.log(`Se extrajo una palabra Reservada`);
+                console.log(codigoMayus);
+                return new Token(Tokens.PALABRA_RESERVADA, arr[i], `OK`, i - 1);
+            }
+        }
+    
     }
+
+
+    
 
     const codigo1 = "$id =>2 @@@ /CADENA/!COMEN!YONFIN";
     const a = new analizador(codigo1, []);
