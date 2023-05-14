@@ -1,45 +1,69 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset='utf-8'>
-        <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-        <title>Analizador Lexico</title>
-        <meta name='viewport' content='width=device-width, initial-scale=1'>
-        <link rel="stylesheet" type="text/css" media="screen" href="normalize.css">
-        <link rel="stylesheet" type="text/css" media="screen" href="main.css">
-    </head>
-    <body>
-        <div class="content">
-            <header class="header">
-                <div class="titulo">
-                    <h1>Analizador lexico MyFirst</h1>
-                </div>
-                <div class="logo">
 
-                </div>
-            </header>
-            <article class="main">
-                <div class="main__item" class="codigoFuente">
-                    <textarea id="txt-codigo" class="main__item-codigo" placeholder="Ingrese el codigo fuente."></textarea>
-                </div>
-                <div class="main__item"  class="btn">
-                    <button id="btn_analizar" class="main__item-btn">Analizar codigo</button>
-                </div>
-                <div class="main__item"  class="res">
-                    <ul id="res-list" class="main__item-res">
-                    </ul>
-                </div>
-            </article class="article">
-            <footer class="footer">
-                <div class="contenedor-estudiantes">
-                    <div class="estudiante">
-                        <h2 class="estudiante__nombre">Michael Alejandro Aguirre Hoyos</h2>
-                        <h2 class="estudiante__nombre">Ligia Murillo Escobar</h2>
-                        <h2 class="estudiante__nombre">Juan Carlos Celis</h2>
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title>Analizador Lexico</title>
+</head>
+
+<body>
+
+    <div class="card border-success mb-3" style="margin: 20px;">
+        <div class="card-header border-success"
+            style="background-color: rgb(87, 142, 243); color: beige; text-align: center;">Analizador Lexico</div>
+        <div class="card-body text-success">
+            <div class="row justify-content-center align-items-center g-2">
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="badge bg-primary text-wrap ">
+                            Codigo Fuente:
+                        </div>
+                        <div class="form-floating" style="padding: 20px; width: 100%;">
+                            
+                            <textarea id="txt-codigo" class="form-control"></textarea>
+
+                        </div>
+
+                        <button type="button" id="btn_analizar" class="btn btn-warning" style="margin: 10px; ">Analizar
+                            Codigo</button>
+                    </div>
+
+                    <div class="card h-100 " style="margin-top: 40px;">
+                        <div class="badge bg-success text-wrap">
+                            Resultado:
+                        </div>
+
+                        <ul id="res-list" class="list-group" style="text-align: center; margin: 50px;">
+                        </ul>
+                        
+                    </div>
+
                     </div>
                 </div>
-            </footer>
+            
+            </div>
+
+
         </div>
-        <script src='main.js'></script>
-    </body>
+        <div class="card-footer bg-transparent border-success">
+           
+    </div>
+
+    <ul class="list-group" style="text-align: center; margin: 50px;">
+        <li class="list-group-item active" aria-current="true">Presentado Por:</li>
+        <li class="list-group-item">Michel Aguirre</li>
+        <li class="list-group-item">Juan Carlos Celis</li>
+        <li class="list-group-item">Ligia Murillo</li>
+    </ul>
+
+    <script src='main.js'></script>
+</body>
+
 </html>

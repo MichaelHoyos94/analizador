@@ -15,7 +15,8 @@ const Tokens = {
     FIN_SENTENCIA: `Fin de sentencia`,
     APERTURA: 'Parentesis o llave de apertura',
     CIERRE: `Parentesis o llave de cierre`,
-    SEPARADOR: `Separador`
+    SEPARADOR: `Separador`,
+    HEXADECIMAL: `Hexadecimal`
 }
 /**
  * Representa un token, el analizador tendra una lista de estos.
@@ -71,6 +72,10 @@ class analizador {
             return token;
 
         token = this.extraerAumDec(i);
+        if (token)
+            return token;
+
+        token = this.extraerOperadoresRelacionales(i);
         if (token)
             return token;
 
@@ -222,7 +227,7 @@ class analizador {
         var patternHexadecimal = /^[0-9A-Fa-f]+$/;
         var caracter = this.codigo.charAt(i);
 
-        if (caracter === '#') {
+        if (caracter === '#' && patternHexadecimal.test(this.codigo.charAt(i+1))) {
 
             var pos = i;
             i++;
@@ -252,11 +257,11 @@ class analizador {
             //i++;
             //caracter = this.cadena.charAt(i);
 
-            if (baseOperadores.includes(this.cadena.charAt(i+1))) { 
+            if (baseOperadores.includes(this.codigo.charAt(i+1))) { 
                 i++;
             }
 
-            var operador = this.cadena.substring(pos, i);
+            var operador = this.codigo.substring(pos, i);
 
             if (operadoresRelacionales.includes(operador)) {
                 return new Token(Tokens.OPERADOR_RELACIONAL, this.codigo.substring(pos, i), "OK", i);
@@ -266,6 +271,8 @@ class analizador {
 
         return null;
       }
+      
+      
     /*
     extraerString = (i) => {
         //Valor con el que deben hacer match solo acepta si empieza y termina con /
@@ -299,12 +306,14 @@ class analizador {
         if (!isNaN(caracter)) {
             let pos = i;
             i++;
+            caracter = this.codigo.charAt(i);
 
             //Siga recorriendo mientras encuentre un numero o un punto
             while (i < this.codigo.length && (!isNaN(caracter) || caracter === '.')) {
                 i++;
                 caracter = this.codigo.charAt(i);
             }
+
             //Evaluo si la subcadena es un numero entero
             if (Number.isInteger(Number(this.codigo.substring(pos, i)))) {
                 return new Token(Tokens.ENTERO, this.codigo.substring(pos, i), `OK`, i);
@@ -357,9 +366,9 @@ btn.addEventListener('click', function() {
     let elementos = ``;
     tokens_analizados.forEach(element => {
         if(element.estado === `OK`)
-            elementos += `<li class="okToken">Tipo: ${element.tipo} | Valor: ${element.valor} | Estado: ${element.estado}</li>\n`
+            elementos += `<li class="list-group-item list-group-item-success">Tipo: ${element.tipo} | Valor: ${element.valor} | Estado: ${element.estado}</li>\n`
         else
-            elementos += `<li class="wrongToken">Tipo: ${element.tipo} | Valor: ${element.valor} | Estado: ${element.estado}</li>\n`
+            elementos += ` <li class="list-group-item list-group-item-danger">Tipo: ${element.tipo} | Valor: ${element.valor} | Estado: ${element.estado}</li>\n`
     });
     res.innerHTML = elementos;
 });
