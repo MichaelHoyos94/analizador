@@ -122,6 +122,11 @@ class analizador {
         
         return new Token(Tokens.NO_RECONOCIDO, this.codigo.charAt(i), 'ERROR', i);
     }
+    /**
+     * @author: Michael Alejandro Aguirre
+     * @description: Extrae un token de tipo String si coincide
+     * @returns token o null
+     */
     extraerString = (i) => {///an
         if (this.codigo.charAt(i) == `/`) {
             let pos = i;
@@ -135,6 +140,12 @@ class analizador {
         }
         return null;
     };
+    /**
+     * @author: Michael Alejandro Aguirre Hoyos
+     * @description: Extrae un token de tipo comentario si coincide
+     * @param {*} i: Posicion donde empieza el token
+     * @returns token o null
+     */
     extraerComentario = (i) => {//!
         if (this.codigo.charAt(i) == `!`) {
             let pos = i;
@@ -148,16 +159,34 @@ class analizador {
         }
         return null;
     };
+    /**
+     * @author: Michael Alejando Aguirre
+     * @description: Extrae un token de tipo asignacion si coincide.
+     * @param {*} i 
+     * @returns token o null
+     */
     extraerAsignacion = (i) => {
         if (this.codigo.charAt(i) == `=` && this.codigo.charAt(i + 1) == `>`)
             return new Token(Tokens.OPERADOR_ASIGNACION, this.codigo.substring(i, i + 2), `OK`, i + 1);
         return null;
     };
+    /**
+     * @author: Michael Alejandro Aguirre Hoyos
+     * @description: Extrae un token de tipo logico si coincide.
+     * @param {*} i 
+     * @returns token o null
+     */
     extraerLogico = (i) => {
         if (this.codigo.charAt(i) == `Y` || this.codigo.charAt(i) == `O` || this.codigo.charAt(i) == `N`)
             return new Token(Tokens.OPERADOR_LOGICO, this.codigo.charAt(i), `OK`, i);
         return null;
     };
+    /**
+     * @author: Michael Alejandro Aguirre Hoyos
+     * @description: Extrae un token de tipo fin de asignacion si coincide.
+     * @param {*} i 
+     * @returns 
+     */
     extraerFin = (i) => {
         if (this.codigo.substring(i, this.codigo.length).startsWith(`FIN`))
             return new Token(Tokens.FIN_SENTENCIA, `FIN`, `OK`, i + 2);
@@ -220,33 +249,26 @@ class analizador {
         }
       
         return null;
-      }
+    }
 
-      extraerHexadecimal = (i) =>{
+    extraerHexadecimal = (i) =>{
 
         var patternHexadecimal = /^[0-9A-Fa-f]+$/;
         var caracter = this.codigo.charAt(i);
-
         if (caracter === '#' && patternHexadecimal.test(this.codigo.charAt(i+1))) {
-
             var pos = i;
             i++;
             caracter = this.codigo.charAt(i);
-
             while (i < this.codigo.length && patternHexadecimal.test(caracter)) {
                 i++;  
                 caracter = this.codigo.charAt(i);  
             }
-
-            return new Token(Tokens.HEXADECIMAL, this.codigo.substring(pos, i), "OK", i);
-            
+            return new Token(Tokens.HEXADECIMAL, this.codigo.substring(pos, i), "OK", i);   
         }
-
         return null;
+    }
 
-      }
-
-      extraerOperadoresRelacionales = (i) =>{
+    extraerOperadoresRelacionales = (i) =>{
         var baseOperadores = ["=", "<", ">", "!"];
         var operadoresRelacionales = ["==", "!=", "<", ">", "<=", ">="];
         var caracter = this.codigo.charAt(i);
@@ -268,37 +290,8 @@ class analizador {
             }
             
         }
-
         return null;
-      }
-      
-      
-    /*
-    extraerString = (i) => {
-        //Valor con el que deben hacer match solo acepta si empieza y termina con /
-        const pattern = /^\/.*\/$/;
-        let caracter = this.codigo.charAt(i);
-        if (caracter === '/') {
-            let pos = i;
-            i++;
-            //mientras el caracter sea diferente a un salto de linea
-            while (i < this.codigo.length && caracter !== '\n') {
-                i++;
-                caracter = this.codigo.charAt(i);
-                //Si encuientra otro / termine el ciclo que hemos terminado de encontrar nuestra cadena
-                if (caracter === '/') {
-                    i++;
-                    caracter = this.codigo.charAt(i);
-                    break;
-                }
-            }
-            //Si la cadena hace martch con el pattern retorne el token tipo cadena de caracteres
-            if (pattern.test(this.codigo.substring(pos, i))) {
-                return new Token(Tokens.CADENA_CARACTERES, this.codigo.substring(pos, i), `OK`, i);
-            }
-        }
-        return null;
-    };*/
+    }
     extraerNumero = (i) => {
         //Posicion Actual de la cadena
         let caracter = this.codigo.charAt(i);
@@ -347,6 +340,12 @@ class analizador {
             return new Token(Tokens.OPERADOR_INCREMENTO, this.codigo.substring(i, i + 2), `OK`, i + 1);
         return null;
     };
+    /**
+     * @author: Michael Alejandro Aguirre Hoyos
+     * @description: extrae un token de tipo aritmetico si coincide.
+     * @param {*} i 
+     * @returns token o null
+     */
     extraerOperAr = (i) =>{
         let char = this.codigo.charAt(i);
         if (char === `+` || char === `-` || char === `*`)
