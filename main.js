@@ -105,6 +105,15 @@ class analizador {
         token = this.extraerSeparador(i);
         if (token)
             return token;
+
+        token = this.extraerPalabraReservada(i);
+        if (token)
+            return token;
+
+        token = this.extraerHexadecimal(i);
+        if (token)
+            return token;
+
         
         return new Token(Tokens.NO_RECONOCIDO, this.codigo.charAt(i), 'ERROR', i);
     }
@@ -179,6 +188,84 @@ class analizador {
         }
         return null;
     };
+    extraerPalabraReservada = (i) => {
+        var palabrasReservadas = ["ENTERO", "REAL", "PARA", "MIENTRAS", "PRIVADO", "PUBLICO", "PAQUETE", "IMPORTAR", "CLASE", "RETORNAR", "BREAK", "CADENA", "BOOLEANO", "SI", "CASO"];
+        var patternLetra = /^[a-zA-Z]/;
+        var caracter = this.codigo.charAt(i);
+      
+        if (patternLetra.test(caracter)) {
+          var pos = i;
+          i++;
+          caracter = this.codigo.charAt(i);
+      
+          while (i < this.codigo.length && patternLetra.test(caracter) && caracter !== " ") {
+            i++;
+            caracter = this.codigo.charAt(i);
+          }
+      
+          var palabra = this.codigo.substring(pos, i);
+      
+          if (palabrasReservadas.includes(palabra.toUpperCase())) {
+            if (palabra === palabra.toUpperCase()) {
+              return new Token(Tokens.PALABRA_RESERVADA, this.codigo.substring(pos, i), "OK", i);
+            } else {
+                return new Token(Tokens.NO_RECONOCIDO, this.codigo.substring(pos, i), "ERROR-PALABRA REERVADA EN MINISCULA", i);
+            }
+          }
+        }
+      
+        return null;
+      }
+
+      extraerHexadecimal = (i) =>{
+
+        var patternHexadecimal = /^[0-9A-Fa-f]+$/;
+        var caracter = this.codigo.charAt(i);
+
+        if (caracter === '#') {
+
+            var pos = i;
+            i++;
+            caracter = this.codigo.charAt(i);
+
+            while (i < this.codigo.length && patternHexadecimal.test(caracter)) {
+                i++;  
+                caracter = this.codigo.charAt(i);  
+            }
+
+            return new Token(Tokens.HEXADECIMAL, this.codigo.substring(pos, i), "OK", i);
+            
+        }
+
+        return null;
+
+      }
+
+      extraerOperadoresRelacionales = (i) =>{
+        var baseOperadores = ["=", "<", ">", "!"];
+        var operadoresRelacionales = ["==", "!=", "<", ">", "<=", ">="];
+        var caracter = this.codigo.charAt(i);
+
+
+        if (baseOperadores.includes(caracter.toString())) {
+            var pos = i;
+            //i++;
+            //caracter = this.cadena.charAt(i);
+
+            if (baseOperadores.includes(this.cadena.charAt(i+1))) { 
+                i++;
+            }
+
+            var operador = this.cadena.substring(pos, i);
+
+            if (operadoresRelacionales.includes(operador)) {
+                return new Token(Tokens.OPERADOR_RELACIONAL, this.codigo.substring(pos, i), "OK", i);
+            }
+            
+        }
+
+        return null;
+      }
     /*
     extraerString = (i) => {
         //Valor con el que deben hacer match solo acepta si empieza y termina con /
