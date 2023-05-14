@@ -15,7 +15,8 @@ const Tokens = {
     FIN_SENTENCIA: `Fin de sentencia`,
     APERTURA: 'Parentesis o llave de apertura',
     CIERRE: `Parentesis o llave de cierre`,
-    SEPARADOR: `Separador`
+    SEPARADOR: `Separador`,
+    HEXADECIMAL: `Hexadecimal`
 }
 /**
  * Representa un token, el analizador tendra una lista de estos.
@@ -74,6 +75,10 @@ class analizador {
         if (token)
             return token;
 
+        token = this.extraerOperadoresRelacionales(i);
+        if (token)
+            return token;
+
         token = this.extraerOperAr(i);
         if (token)
             return token;
@@ -105,6 +110,15 @@ class analizador {
         token = this.extraerSeparador(i);
         if (token)
             return token;
+
+        token = this.extraerPalabraReservada(i);
+        if (token)
+            return token;
+
+        token = this.extraerHexadecimal(i);
+        if (token)
+            return token;
+
         
         return new Token(Tokens.NO_RECONOCIDO, this.codigo.charAt(i), 'ERROR', i);
     }
@@ -179,6 +193,87 @@ class analizador {
         }
         return null;
     };
+
+    extraerPalabraReservada = (i) => {
+        var palabrasReservadas = ["ENTERO", "REAL", "PARA", "MIENTRAS", "PRIVADO", "PUBLICO", "PAQUETE", "IMPORTAR", "CLASE", "RETORNAR", "BREAK", "CADENA", "BOOLEANO", "SI", "CASO"];
+        var patternLetra = /^[a-zA-Z]/;
+        var caracter = this.codigo.charAt(i);
+      
+        if (patternLetra.test(caracter)) {
+          var pos = i;
+          i++;
+          caracter = this.codigo.charAt(i);
+      
+          while (i < this.codigo.length && patternLetra.test(caracter) && caracter !== " ") {
+            i++;
+            caracter = this.codigo.charAt(i);
+          }
+      
+          var palabra = this.codigo.substring(pos, i);
+      
+          if (palabrasReservadas.includes(palabra.toUpperCase())) {
+            if (palabra === palabra.toUpperCase()) {
+              return new Token(Tokens.PALABRA_RESERVADA, this.codigo.substring(pos, i), "OK", i);
+            } else {
+                return new Token(Tokens.NO_RECONOCIDO, this.codigo.substring(pos, i), "ERROR-PALABRA REERVADA EN MINISCULA", i);
+            }
+          }
+        }
+      
+        return null;
+      }
+
+      extraerHexadecimal = (i) =>{
+
+        var patternHexadecimal = /^[0-9A-Fa-f]+$/;
+        var caracter = this.codigo.charAt(i);
+
+        if (caracter === '#' && patternHexadecimal.test(this.codigo.charAt(i+1))) {
+
+            var pos = i;
+            i++;
+            caracter = this.codigo.charAt(i);
+
+            while (i < this.codigo.length && patternHexadecimal.test(caracter)) {
+                i++;  
+                caracter = this.codigo.charAt(i);  
+            }
+
+            return new Token(Tokens.HEXADECIMAL, this.codigo.substring(pos, i), "OK", i);
+            
+        }
+
+        return null;
+
+      }
+
+      extraerOperadoresRelacionales = (i) =>{
+        var baseOperadores = ["=", "<", ">", "!"];
+        var operadoresRelacionales = ["==", "!=", "<", ">", "<=", ">="];
+        var caracter = this.codigo.charAt(i);
+
+
+        if (baseOperadores.includes(caracter.toString())) {
+            var pos = i;
+            //i++;
+            //caracter = this.cadena.charAt(i);
+
+            if (baseOperadores.includes(this.codigo.charAt(i+1))) { 
+                i++;
+            }
+
+            var operador = this.codigo.substring(pos, i);
+
+            if (operadoresRelacionales.includes(operador)) {
+                return new Token(Tokens.OPERADOR_RELACIONAL, this.codigo.substring(pos, i), "OK", i);
+            }
+            
+        }
+
+        return null;
+      }
+      
+      
     /*
     extraerString = (i) => {
         //Valor con el que deben hacer match solo acepta si empieza y termina con /
@@ -212,12 +307,14 @@ class analizador {
         if (!isNaN(caracter)) {
             let pos = i;
             i++;
+            caracter = this.codigo.charAt(i);
 
             //Siga recorriendo mientras encuentre un numero o un punto
             while (i < this.codigo.length && (!isNaN(caracter) || caracter === '.')) {
                 i++;
                 caracter = this.codigo.charAt(i);
             }
+
             //Evaluo si la subcadena es un numero entero
             if (Number.isInteger(Number(this.codigo.substring(pos, i)))) {
                 return new Token(Tokens.ENTERO, this.codigo.substring(pos, i), `OK`, i);
@@ -270,9 +367,9 @@ btn.addEventListener('click', function() {
     let elementos = ``;
     tokens_analizados.forEach(element => {
         if(element.estado === `OK`)
-            elementos += `<li class="okToken">Tipo: ${element.tipo} | Valor: ${element.valor} | Estado: ${element.estado}</li>\n`
+            elementos += `<li class="list-group-item list-group-item-success">Tipo: ${element.tipo} | Valor: ${element.valor} | Estado: ${element.estado}</li>\n`
         else
-            elementos += `<li class="wrongToken">Tipo: ${element.tipo} | Valor: ${element.valor} | Estado: ${element.estado}</li>\n`
+            elementos += ` <li class="list-group-item list-group-item-danger">Tipo: ${element.tipo} | Valor: ${element.valor} | Estado: ${element.estado}</li>\n`
     });
     res.innerHTML = elementos;
 });
