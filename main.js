@@ -193,7 +193,6 @@ class analizador {
         }
         return null;
     };
-
     extraerPalabraReservada = (i) => {
         var palabrasReservadas = ["ENTERO", "REAL", "PARA", "MIENTRAS", "PRIVADO", "PUBLICO", "PAQUETE", "IMPORTAR", "CLASE", "RETORNAR", "BREAK", "CADENA", "BOOLEANO", "SI", "CASO"];
         var patternLetra = /^[a-zA-Z]/;
